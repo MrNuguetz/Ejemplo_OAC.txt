@@ -1,0 +1,105 @@
+%include "./pc_io.inc" 
+
+section .data
+ms1: db 'captura el primer numero: ', 0x0
+ms2: db 'captura el segundo numero: ', 0x0
+
+section .bss
+num1 resb 1
+num2 resb 1
+resultado resb 4
+cad resb 10
+section .text
+
+global _start
+_start:
+
+mov edx,ms1
+call puts
+
+;capturar numero 1
+mov ebx,num1
+call getche
+sub al,48
+mov byte[ebx],al
+
+call salto
+
+
+;capturar numero 2
+mov edx,ms2
+call puts
+mov ebx,num2
+call getche
+sub al,48
+mov byte[ebx],al
+
+call ciclo
+call salto
+mov [resultado],eax
+call imprimir
+call salto
+
+mov eax,1
+mov ebx,0
+int 80h
+
+ciclo:
+    mov ecx,0
+    mov ebx,0
+    mov eax,0
+    mov cl,byte[num1]
+    mov bl,byte[num2]
+        ciclocap:
+        add eax,ebx
+        loop ciclocap
+        ret
+
+
+imprimir:
+mov esi,cad
+call salto
+mov eax,dword[resultado]
+call printHex8
+ret
+
+
+
+;en eax el valor a convertir mostrar en hexadecimal
+printHex8:
+  pushad
+  mov edx, eax
+  mov ebx, 0fh
+  mov cl, 28
+.nxt: shr eax,cl
+.msk: and eax,ebx
+  cmp al, 9
+  jbe .menor
+  add al,7
+.menor:add al,'0'
+  mov byte [esi],al
+  inc esi
+  mov eax, edx
+  cmp cl, 0
+  je .print
+  sub cl, 4
+  cmp cl, 0
+  ja .nxt
+  je .msk
+.print: mov eax, 4
+  mov ebx, 1
+  sub esi, 8
+  mov ecx, esi
+  mov edx, 8
+  int 80h
+  popad
+  ret
+
+salto:
+    pushad
+    mov al,13
+    call putchar
+    mov al,10
+    call putchar
+    popad
+    ret

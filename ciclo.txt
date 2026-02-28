@@ -1,0 +1,55 @@
+%include "./pc_io.inc" 
+
+section .data
+
+msg : db 'ingrese una cadena' ,0x0
+
+section .bss
+texto resb 20
+
+section .text
+
+
+global _start
+
+_start:
+
+mov edx,msg
+call putchar
+
+call capturar
+call salto
+
+
+mov eax,1
+mov ebx,0
+int 80h
+
+
+capturar:
+    mov ecx,0
+    mov eax,0
+    ciclo:
+        call getche
+        cmp al,'*'
+        je imprimir
+        push eax
+        inc ecx
+        jmp ciclo
+
+imprimir:
+    pop eax
+    call putchar
+    loop imprimir
+    ret
+
+
+
+salto:
+    pushad
+    mov al,13
+    call putchar
+    mov al,10
+    call putchar
+    popad
+    ret
