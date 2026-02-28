@@ -1,0 +1,113 @@
+%include "./pc_io.inc" 
+
+section .data
+msg: db 'ingrese un texto : ',0
+len: equ $- msg
+
+section .bss
+texto resb 20
+
+
+section .text
+
+global _start
+_start:
+
+
+mov edx, msg
+call puts
+
+call capturar
+call salto
+call imprimir
+call salto
+call imprimir_alrrevez
+call salto
+
+mov eax,1
+mov ebx,0
+int 80h
+
+capturar: pushad
+    mov esi,0
+    mov edx,texto
+    ciclocap:
+        
+        call getche
+        
+        cmp al,'*'
+        je fin1
+        mov byte[edx+esi],al
+        inc esi
+        jmp ciclocap
+    
+
+fin1 : 
+        mov byte[edx+esi],'*'
+        popad
+        ret
+        
+fin2 : 
+        
+        popad
+        ret
+
+fin3:
+     dec edi
+     jump imp
+
+      
+imprimir: pushad
+    mov esi,0
+    mov ebx,texto
+
+    adomos:
+        mov al,byte[ebx+esi]
+        cmp al,'*'
+        je fin2
+        cmp al,' '
+        je imprimir_espacio
+        sub al,32
+        call putchar
+        inc esi
+        jmp adomos
+
+imprimir_alrrevez: pushad
+    mov edi,0
+    mov ebx,texto
+
+    long:
+        mov al,byte[ebx+edi]
+        cmp al,'*'
+        je fin3
+        cmp al,' '
+        je imprimir_espacio
+        inc edi
+        jmp long
+
+    imp:
+        mov al,byte[ebx+edi]
+        cmp al,' '
+        je imprimir_espacio
+        sub al,32
+        call putchar
+        dec edi
+        jmp imp
+
+
+
+salto:
+    pushad
+    mov al,13
+    call putchar
+    mov al,10
+    call putchar
+    popad
+    ret
+    
+imprimir_espacio:
+    
+    mov al,' '
+    call putchar
+    inc esi
+    jmp adomos

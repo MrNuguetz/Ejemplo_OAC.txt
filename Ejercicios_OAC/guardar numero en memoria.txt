@@ -1,0 +1,121 @@
+%include "./pc_io.inc" 
+
+section .data
+
+num1 :db '0Fh0,0DEh,0BCh,9Ah,78h,56h,34h,12h', 0x0
+;num2 :db '01h',0x0
+;num3 :db '01h,01h',0x0
+;num4 :db '01h', 0x0
+
+section .bss
+;cadena resb 100
+contenido resb 100
+contenido2 resb 100
+cad resb 10
+
+section .text
+
+global _start
+_start:
+
+ciclo:
+
+mov esi,cad
+
+mov eax,12345678h
+mov ebx,contenido
+mov [ebx],eax
+;call printHex
+
+mov eax,9ABCDEF0h
+mov [ebx+4],eax
+
+
+mov eax,7001001h
+;mov ebx,contenido2
+mov [contenido2],eax
+;call printHex
+mov eax,00010001h
+mov [contenido2+4],eax
+
+
+mov ebx,contenido
+mov edx,contenido2
+mov eax,[ebx]
+add eax,[edx]
+call printHex
+
+mov eax,[ebx+4]
+adc eax,[edx+4]
+call printHex
+
+
+call salto
+
+
+;mov ebx,00010001h
+;add eax,ebx
+;call printHex
+
+
+;mov ebx,00010001h
+;add eax,ebx
+;mov [contenido],eax
+;call printHex
+;call salto
+
+
+
+
+
+;call printHex
+;call salto
+
+
+;mov eax,9ABCDEF0h
+;mov edx,eax
+;call printHex
+
+;call salto
+
+
+
+;en eax el valor a convertir mostrar en hexadecimal
+printHex:
+  pushad
+  mov edx, eax
+  mov ebx, 0fh
+  mov cl, 28
+.nxt: shr eax,cl
+.msk: and eax,ebx
+  cmp al, 9
+  jbe .menor
+  add al,7
+.menor:add al,'0'
+  mov byte [esi],al
+  inc esi
+  mov eax, edx
+  cmp cl, 0
+  je .print
+  sub cl, 4
+  cmp cl, 0
+  ja .nxt
+  je .msk
+.print: mov eax, 4
+  mov ebx, 1
+  sub esi, 8
+  mov ecx, esi
+  mov edx, 8
+  int 80h
+  popad
+  ret
+
+salto:
+    pushad
+    mov al,13
+    call putchar
+    mov al,10
+    call putchar
+    popad
+    ret
+ 

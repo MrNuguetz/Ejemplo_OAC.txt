@@ -1,0 +1,17 @@
+sudo apt update
+
+sudo apt install nasm -y
+
+mkdir ejemplo
+
+cd /workspaces/Ejemplo_OAC.txt/Ejemplo/
+
+pwd
+
+touch ejemplo.asm
+
+nasm -f elf Ejemplo.asm
+
+ld -m elf_i386 -s -o Ejemplo Ejemplo.o libpc_io.a
+
+./Ejemplo
